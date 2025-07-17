@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Color Space Cross-Section Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Color Space Cross Sections</h1>
+    </header>
+
+    <main>
+        <div class="controls">
+            <div class="control-group">
+                <label for="color-system-select">Color System:</label>
+                <select id="color-system-select">
+                    <option value="rgb">RGB</option>
+                    <option value="hsl">HSL</option>
+                    <option value="hsv">HSV</option>
+                    <option value="lab">CIELAB</option>
+                    <option value="lch">CIELCH</option>
+                    <option value="cmyk">CMYK</option>
+                    <option value="xyz">CIEXYZ</option>
+                    <option value="yiq">YIQ</option>
+                    <option value="oklab">OkLAB</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="rotation-mode-select">Rotation Mode:</label>
+                <select id="rotation-mode-select">
+                    <option value="none">None</option>
+                    <option value="pitch">Pitch Only</option>
+                    <option value="yaw">Yaw Only</option>
+                    <option value="roll">Roll Only</option>
+                    <option value="pitch_yaw">Pitch & Yaw</option>
+                    <option value="pitch_roll">Pitch & Roll</option>
+                    <option value="yaw_roll">Yaw & Roll</option>
+                    <option value="spiral">Spiral (All 3 Axes)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="dithering-slider">Dithering:</label>
+                <input type="range" id="dithering-slider" min="0" max="100" value="0">
+                <span id="dithering-value">None</span>
+            </div>
+
+            <button id="randomize-button">Create Cross-Section</button>
+
+            <div class="current-params">
+                <h3>Current Random Parameters:</h3>
+                <p><strong>System:</strong> <span id="current-system"></span></p>
+                <p><strong>Center:</strong> <span id="current-center"></span></p>
+                <p><strong>Pitch:</strong> <span id="current-tilt"></span></p>
+                <p><strong>Yaw:</strong> <span id="current-pan"></span></p>
+                <p><strong>Roll:</strong> <span id="current-roll"></span></p>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="color-canvas" width="512" height="512"></canvas>
+        </div>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>

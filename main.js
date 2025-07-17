@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         cmyk: {
             dims: ['C', 'M', 'Y', 'K'],
-            ranges: [[0, 100], [0, 100], [0, 100]],
+            ranges: [[0, 100], [0, 100], [0, 100], [0, 100]],
             toRGB: cmykToRgb,
             isCylindrical: false
         },
@@ -149,22 +149,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (system.isCylindrical && index === 0) {
                 return range[0] + Math.random() * (range[1] - range[0]);
-            } else {
+            } 
+            else if (currentState.system === 'yiq' && index === 0) {
+                return 0.5 + (Math.random() * 0.4 - 0.2); 
+            }
+            else if (currentState.system === 'oklab' && index === 0) {
+                return 0.5 + (Math.random() * 0.4 - 0.2);
+            }
+            else {
                 return newMin + Math.random() * (newMax - newMin);
             }
         });
-
-        if (currentState.system === 'cmyk') {
-            const kRange = system.ranges[3];
-            const kFullRange = kRange[1] - kRange[0];
-            const kReducedRange = kFullRange * reductionFactor;
-            const kOffset = (kFullRange - kReducedRange) / 2;
-            currentState.centerPoint[3] = (kRange[0] + kOffset) + Math.random() * kReducedRange;
-        } else if (currentState.system === 'yiq') {
-            currentState.centerPoint[0] = 0.5 + (Math.random() * 0.4 - 0.2);
-        } else if (currentState.system === 'oklab') {
-            currentState.centerPoint[0] = 0.5 + (Math.random() * 0.4 - 0.2);
-        }
 
         currentState.tilt = Math.random() * 180 - 90;
         currentState.pan = Math.random() * 360;
@@ -179,11 +174,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateDisplayedParameters() {
         const system = COLOR_SYSTEMS[currentState.system];
-        currentSystemDisplay.textContent = system.dims.slice(0, 3).join('/');
-        let centerText = currentState.centerPoint.slice(0, 3).map(val => val.toFixed(3)).join(', ');
-        if (currentState.system === 'cmyk') {
-            centerText = currentState.centerPoint.map((val, i) => i === 3 ? `K:${val.toFixed(1)}` : val.toFixed(1)).join(', ');
+        let dimsToDisplay = system.dims; 
+        if (system.dims.length > 3 && currentState.system !== 'cmyk') {
+            dimsToDisplay = system.dims.slice(0, 3);
         }
+
+        currentSystemDisplay.textContent = dimsToDisplay.join('/');
+        
+        let centerText = currentState.centerPoint.map((val, i) => {
+            if (currentState.system === 'cmyk' && i === 3) {
+                return `K:${val.toFixed(1)}`;
+            } else {
+                return val.toFixed(3);
+            }
+        }).join(', ');
+        
         currentCenterDisplay.textContent = centerText;
         currentTiltDisplay.textContent = `${currentState.tilt.toFixed(1)}°`;
         currentPanDisplay.textContent = `${currentState.pan.toFixed(1)}°`;
@@ -286,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const v = (1 - y / (height - 1)) * 2 - 1;
 
                 const point3D = vec3.add(
-                    center.slice(0, 3),
+                    center.slice(0, system.dims.length),
                     vec3.add(
                         vec3.scale(planeXAxis, u * scaleFactor),
                         vec3.scale(planeYAxis, v * scaleFactor)
@@ -295,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let colorSpacePoint = [...point3D];
 
-                if (currentState.system === 'cmyk') {
+                if (currentState.system === 'cmyk' && colorSpacePoint.length < 4) {
                     colorSpacePoint.push(currentState.centerPoint[3]); 
                 }
                 
